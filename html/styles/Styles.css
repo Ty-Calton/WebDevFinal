@@ -1,0 +1,222 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #333;
+    padding: 10px 20px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    text-align: right;
+}
+
+.navbar ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0;
+    
+}
+
+.navbar ul li {
+    margin-right: 20px;
+}
+
+.navbar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    
+}
+
+.navbar ul li a:hover {
+    background-color: #007bff;
+}
+
+/* Main Content */
+.main-content {
+    margin-top: 10px; /* To make space for the fixed navbar */
+    padding: 20px;
+    text-align: center;
+}
+
+/* Box Model */
+.box-model {
+    background-image: url('../Images/hiking\ banner.jpg'); /* Provide the image path */
+    background-size: cover; /* Make sure the image covers the whole box */
+    background-position: center; /* Position the image in the center */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
+    color: white;
+    padding: 30px;
+    margin-bottom: 30px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+/* List Styling */
+ul {
+    
+    padding-left: 20px;
+}
+
+ul li {
+    margin: 10px 0;
+}
+
+/* Centering Images */
+img {
+    max-width: 100%;  /* Makes sure images are responsive */
+    height: auto;     /* Maintains aspect ratio */
+    display: block;   /* Makes images behave as block elements */
+    margin: 0 auto;   /* Centers the image horizontally */
+}
+
+/* Headings */
+h2 {
+    font-size: 2rem;
+    color: #007bff;
+    margin-top: 40px;
+}
+
+h3 {
+    font-size: 1.5rem;
+    color: #555;
+    margin-top: 20px;
+}
+
+/* Button */
+.Return-button a {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    display: inline-block;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+.Return-button a:hover {
+    background-color: #0056b3;
+}
+
+/* Centering Iframes */
+iframe {
+    display: block;
+    margin: 20px auto;  /* Centers iframe horizontally */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .navbar ul li {
+        margin-bottom: 10px;
+    }
+
+    .main-content {
+        padding: 10px;
+    }
+
+    .box-model {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2, h3 {
+        font-size: 1.5rem;
+    }
+}
+.list {
+    background-color: #fff; /* White background for the list container */
+    padding: 20px; /* Adds padding inside the container */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+    width: 80%; /* Width of the container */
+    max-width: 500px; /* Maximum width for large screens */
+    display: inline-block;
+    text-align: center;
+    
+
+
+/* Removes default list style and padding */
+ul {
+    padding-left: 0; /* No padding on left */
+    
+}
+
+/* Styling for the individual list items */
+li {
+    font-size: 18px; /* Sets the font size */
+    line-height: 1.6; /* Adds space between lines */
+    margin-bottom: 10px; /* Adds margin below each item */
+}
+
+/* Nested list style */
+ul ul {
+    display: inline-block;
+    margin-top: 5px; /* Adds a little space above nested lists */
+
+}
+
+ul ul li {
+    font-size: 16px; /* Slightly smaller text for nested items */
+    color: #555; /* Lighter color for nested items */
+
+}
+ol {
+    list-style-position: inside; /* Keeps the numbers inside the list items */
+    text-align: center; /* Centers the numbers */
+    padding-left: 0; /* Removes the default padding on the left */
+    margin: 0; /* Removes default margins */
+}
+}
+.title {
+    background-color: #fff; /* White background for the list container */
+    border-radius: 10px; /* Rounded corners */
+    width: 80%; /* Width of the container */
+    max-width: 500px; /* Maximum width for large screens */
+    display: inline-block;
+    
+}
+.tableauPlaceholder{
+    max-width: 100%; 
+    width: auto; /* Makes sure images are responsive */
+    height: auto;     /* Maintains aspect ratio */
+    display: block;   /* Makes images behave as block elements */
+    margin: 0 auto;   /* Centers the image horizontally */
+}

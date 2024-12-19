@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frogger Game</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #4CAF50;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        #gameCanvas {
+            background-color: #222;
+            border: 5px solid #fff;
+            border-radius: 10px;
+            display: block;
+        }
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        #instructions {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            display: block;
+        }
+    </style>
+    <link rel="stylesheet" href="styles/Styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <ul>
+            <li><a href="mywebpage.html">Main Page</a></li>
+            <li><a href="../index.html">About Me</a></li>
+        </ul>
+    </div>
+    <div id="score">Score: 0 | Lives: 3</div>
+    <div id="instructions">
+        <p>Use Arrow Keys to Move</p>
+        <p>Reach the top for a reward!</p>
+        <p>Press any key to start</p>
+    </div>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
+        const instructionsDisplay = document.getElementById('instructions');
+        let score = 0;
+        let lives = 3;
+        let gameOver = false;
+        let confetti = [];
+        let confettiActive = false;
+        let confettiTimer = 0;
+        let gameStarted = false; // Track if the game has started
+
+        const frog = {
+            x: canvas.width / 2 - 15,
+            y: canvas.height - 30,
+            width: 30,
+            height: 30,
+            draw() {
+                // Draw frog body
+                ctx.fillStyle = '#0F0';
+                ctx.beginPath();
+                ctx.arc(this.x + this.width / 2, this.y + this.height / 2, 15, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw eyes
+                ctx.fillStyle = '#FFF';
+                ctx.beginPath();
+                ctx.arc(this.x + 8, this.y + 8, 5, 0, Math.PI * 2);
+                ctx.arc(this.x + 22, this.y + 8, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(this.x + 8, this.y + 8, 2, 0, Math.PI * 2);
+                ctx.arc(this.x + 22, this.y + 8, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        };
+
+        const lanes = [
+            { y: 50, speed: 1.1, direction: 1, cars: [] },  // Slowed down further
+            { y: 100, speed: 1.3, direction: -1, cars: [] }, // Slowed down further
+            { y: 150, speed: 1.2, direction: 1, cars: [] },  // Slowed down further
+            { y: 200, speed: 1.1, direction: -1, cars: [] }, // Slowed down further
+            { y: 250, speed: 1.3, direction: 1, cars: [] },  // Slowed down further
+        ];
+
+        function createCars() {
+            for (const lane of lanes) {
+                for (let i = 0; i < 3; i++) {
+                    lane.cars.push({
+                        x: i * 200 + Math.random() * 50,
+                        width: 50,
+                        height: 30,
+                        color: ['#FF0000', '#00FFFF', '#FFA500'][Math.floor(Math.random() * 3)]
+                    });
+                }
+            }
+        }
+
+        createCars();
+
+        function drawCars() {
+            for (const lane of lanes) {
+                for (const car of lane.cars) {
+                    ctx.fillStyle = car.color;
+                    ctx.fillRect(car.x, lane.y, car.width, car.height);
+
+                    // Draw windows
+                    ctx.fillStyle = '#FFF';
+                    ctx.fillRect(car.x + 5, lane.y + 5, car.width - 10, car.height / 3);
+
+                    // Draw wheels
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(car.x + 5, lane.y + car.height - 5, 10, 5);
+                    ctx.fillRect(car.x + car.width - 15, lane.y + car.height - 5, 10, 5);
+                }
+            }
+        }
+
+        function moveCars() {
+            for (const lane of lanes) {
+                for (const car of lane.cars) {
+                    car.x += lane.speed * lane.direction;
+                    if (lane.direction === 1 && car.x > canvas.width) {
+                        car.x = -car.width;
+                    } else if (lane.direction === -1 && car.x + car.width < 0) {
+                        car.x = canvas.width;
+                    }
+                }
+            }
+        }
+
+        function checkCollision() {
+            for (const lane of lanes) {
+                for (const car of lane.cars) {
+                    if (
+                        frog.x < car.x + car.width &&
+                        frog.x + frog.width > car.x &&
+                        frog.y < lane.y + car.height &&
+                        frog.y + frog.height > lane.y
+                    ) {
+                        lives -= 1;
+                        resetFrog();
+                        updateScore();
+                        if (lives === 0) gameOver = true;
+                    }
+                }
+            }
+        }
+
+        function resetFrog() {
+            frog.x = canvas.width / 2 - 15;
+            frog.y = canvas.height - 30;
+        }
+
+        function resetGame() {
+            resetFrog();
+            score = 0;
+            lives = 3;
+            updateScore();
+            gameOver = false;
+            confettiActive = false;
+            confettiTimer = 0;
+            confetti = [];
+            instructionsDisplay.style.display = 'none'; // Hide instructions once the game starts
+            gameStarted = true;
+            update();
+        }
+
+        function updateScore() {
+            scoreDisplay.textContent = `Score: ${score} | Lives: ${lives}`;
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 100; i++) {
+                confetti.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height / 2,
+                    size: Math.random() * 5 + 2,
+                    color: ['#FF0000', '#00FFFF', '#FFA500', '#00FF00'][Math.floor(Math.random() * 4)],
+                    speedX: Math.random() * 4 - 2,
+                    speedY: Math.random() * 4 + 2
+                });
+            }
+            confettiActive = true;
+
+            // Stop the confetti after 2 seconds
+            setTimeout(() => {
+                confettiActive = false;
+            }, 2000);
+        }
+
+        function drawConfetti() {
+            for (const particle of confetti) {
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                particle.x += particle.speedX;
+                particle.y += particle.speedY;
+
+                // Reset particles if they go out of screen
+                if (particle.y > canvas.height) {
+                    particle.y = 0;
+                    particle.x = Math.random() * canvas.width;
+                }
+            }
+        }
+
+        function update() {
+            if (gameOver) {
+                ctx.fillStyle = '#FFF';
+                ctx.font = '30px Arial';
+                ctx.fillText('Game Over!', canvas.width / 2 - 80, canvas.height / 2);
+                ctx.font = '20px Arial';
+                ctx.fillText('Press R to Restart', canvas.width / 2 - 80, canvas.height / 2 + 30);
+                return;
+            }
+
+            if (frog.y <= 0) {
+                score += 1000;
+                updateScore();
+                ctx.fillStyle = '#FFF';
+                ctx.font = '30px Arial';
+                ctx.fillText('Good Job!', canvas.width / 2 - 80, canvas.height / 2);
+                createConfetti();
+                resetFrog();
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            moveCars();
+            checkCollision();
+            drawCars();
+            frog.draw();
+
+            if (confettiActive) drawConfetti();
+
+            requestAnimationFrame(update);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (!gameStarted) {
+                resetGame(); // Start the game on any key press
+            } else {
+                const step = 20;
+                if (!gameOver) {
+                    switch (e.key) {
+                        case 'ArrowUp':
+                            frog.y = Math.max(0, frog.y - step);
+                            score += 10;
+                            updateScore();
+                            break;
+                        case 'ArrowDown':
+                            frog.y = Math.min(canvas.height - frog.height, frog.y + step);
+                            break;
+                        case 'ArrowLeft':
+                            frog.x = Math.max(0, frog.x - step);
+                            break;
+                        case 'ArrowRight':
+                            frog.x = Math.min(canvas.width - frog.width, frog.x + step);
+                            break;
+                    }
+                } else if (e.key === 'r' || e.key === 'R') {
+                    resetGame();
+                }
+            }
+        });
+
+        update();
+    </script>
+</body>
+</html>
